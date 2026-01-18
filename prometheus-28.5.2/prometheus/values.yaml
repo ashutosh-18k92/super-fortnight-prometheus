@@ -825,9 +825,9 @@ scrapeConfigs:
     bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
     relabel_configs:
       - source_labels:
-        - __meta_kubernetes_namespace
-        - __meta_kubernetes_service_name
-        - __meta_kubernetes_endpoint_port_name
+          - __meta_kubernetes_namespace
+          - __meta_kubernetes_service_name
+          - __meta_kubernetes_endpoint_port_name
         action: keep
         regex: default;kubernetes;https
   kubernetes-nodes:
@@ -888,8 +888,8 @@ scrapeConfigs:
         target_label: __metrics_path__
         regex: (.+)
       - source_labels:
-        - __address__
-        - __meta_kubernetes_service_annotation_prometheus_io_port
+          - __address__
+          - __meta_kubernetes_service_annotation_prometheus_io_port
         action: replace
         target_label: __address__
         regex: (.+?)(?::\d+)?;(\d+)
@@ -929,8 +929,8 @@ scrapeConfigs:
         target_label: __metrics_path__
         regex: (.+)
       - source_labels:
-        - __address__
-        - __meta_kubernetes_service_annotation_prometheus_io_port
+          - __address__
+          - __meta_kubernetes_service_annotation_prometheus_io_port
         action: replace
         target_label: __address__
         regex: (.+?)(?::\d+)?;(\d+)
@@ -1006,15 +1006,15 @@ scrapeConfigs:
         target_label: __metrics_path__
         regex: (.+)
       - source_labels:
-        - __meta_kubernetes_pod_annotation_prometheus_io_port
-        - __meta_kubernetes_pod_ip
+          - __meta_kubernetes_pod_annotation_prometheus_io_port
+          - __meta_kubernetes_pod_ip
         action: replace
         regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
-        replacement: '[$2]:$1'
+        replacement: "[$2]:$1"
         target_label: __address__
       - source_labels:
-        - __meta_kubernetes_pod_annotation_prometheus_io_port
-        - __meta_kubernetes_pod_ip
+          - __meta_kubernetes_pod_annotation_prometheus_io_port
+          - __meta_kubernetes_pod_ip
         action: replace
         regex: (\d+);((([0-9]+?)(\.|$)){4})
         replacement: $2:$1
@@ -1057,15 +1057,15 @@ scrapeConfigs:
         target_label: __metrics_path__
         regex: (.+)
       - source_labels:
-        - __meta_kubernetes_pod_annotation_prometheus_io_port
-        - __meta_kubernetes_pod_ip
+          - __meta_kubernetes_pod_annotation_prometheus_io_port
+          - __meta_kubernetes_pod_ip
         action: replace
         regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
-        replacement: '[$2]:$1'
+        replacement: "[$2]:$1"
         target_label: __address__
       - source_labels:
-        - __meta_kubernetes_pod_annotation_prometheus_io_port
-        - __meta_kubernetes_pod_ip
+          - __meta_kubernetes_pod_annotation_prometheus_io_port
+          - __meta_kubernetes_pod_ip
         action: replace
         regex: (\d+);((([0-9]+?)(\.|$)){4})
         replacement: $2:$1
@@ -1091,7 +1091,8 @@ scrapeConfigs:
 # extraScrapeConfigs adds additional scrape configs to prometheus.yml
 # must be a string so you have to add a | after extraScrapeConfigs:
 # example adds prometheus-blackbox-exporter scrape config
-extraScrapeConfigs: ""
+extraScrapeConfigs:
+  ""
   # - job_name: 'prometheus-blackbox-exporter'
   #   metrics_path: /probe
   #   params:
@@ -1254,32 +1255,30 @@ prometheus-pushgateway:
   # Optional service annotations
   serviceAnnotations:
     prometheus.io/probe: pushgateway
+    extraScrapeConfigs:
+      - job_name: istio-envoy
+        kubernetes_sd_configs:
+          - role: pod
 
-server:
-  extraScrapeConfigs:
-    - job_name: istio-envoy
-      kubernetes_sd_configs:
-        - role: pod
+        relabel_configs:
+          # Only keep pods with Istio sidecar
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            action: keep
+            regex: istio-proxy
 
-      relabel_configs:
-        # Only keep pods with Istio sidecar
-        - source_labels: [__meta_kubernetes_pod_container_name]
-          action: keep
-          regex: istio-proxy
+          # Set metrics path
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+            replacement: $1
 
-        # Set metrics path
-        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-          action: replace
-          target_label: __metrics_path__
-          regex: (.+)
-          replacement: $1
+          # Default to /stats/prometheus if annotation missing
+          - target_label: __metrics_path__
+            replacement: /stats/prometheus
 
-        # Default to /stats/prometheus if annotation missing
-        - target_label: __metrics_path__
-          replacement: /stats/prometheus
-
-        # Set address to Envoy admin port
-        - source_labels: [__address__]
-          action: replace
-          regex: (.+):.*
-          replacement: $1:15090
+          # Set address to Envoy admin port
+          - source_labels: [__address__]
+            action: replace
+            regex: (.+):.*
+            replacement: $1:15090
