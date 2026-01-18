@@ -1254,3 +1254,32 @@ prometheus-pushgateway:
   # Optional service annotations
   serviceAnnotations:
     prometheus.io/probe: pushgateway
+
+server:
+  extraScrapeConfigs:
+    - job_name: istio-envoy
+      kubernetes_sd_configs:
+        - role: pod
+
+      relabel_configs:
+        # Only keep pods with Istio sidecar
+        - source_labels: [__meta_kubernetes_pod_container_name]
+          action: keep
+          regex: istio-proxy
+
+        # Set metrics path
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+          replacement: $1
+
+        # Default to /stats/prometheus if annotation missing
+        - target_label: __metrics_path__
+          replacement: /stats/prometheus
+
+        # Set address to Envoy admin port
+        - source_labels: [__address__]
+          action: replace
+          regex: (.+):.*
+          replacement: $1:15090
