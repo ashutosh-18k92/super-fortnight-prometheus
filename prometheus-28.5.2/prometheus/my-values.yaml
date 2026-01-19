@@ -20,17 +20,17 @@ server:
         - role: pod
 
       relabel_configs:
-        # ONLY scrape istio-proxy containers
+        # Keep only Istio sidecar containers
         - source_labels: [__meta_kubernetes_pod_container_name]
           action: keep
           regex: istio-proxy
 
         # Rewrite address to Envoy admin port
-        - source_labels: [__meta_kubernetes_pod_ip]
+        - source_labels: [__address__]
           action: replace
-          target_label: __address__
+          regex: (.+):.*
           replacement: $1:15090
 
-        # Hardcode metrics path
+        # Envoy metrics endpoint
         - target_label: __metrics_path__
           replacement: /stats/prometheus
