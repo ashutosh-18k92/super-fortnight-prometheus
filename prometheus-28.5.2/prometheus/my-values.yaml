@@ -1,3 +1,6 @@
+nodeExporter:
+  enabled: false
+
 server:
   enabled: true
 
