@@ -8,17 +8,6 @@ serviceAccounts:
 
 prometheus-node-exporter:
   enabled: true
-  updateStrategy:
-    type: OnDelete # Or 'Recreate' if the chart supports it directly
-
-  # Ensure we have a grace period to release the port
-  terminationGracePeriodSeconds: 5
-  # 1. Change the internal port the exporter listens on
-  extraArgs:
-    - --web.listen-address=:9111
-  service:
-    port: 9111
-    targetPort: 9111
   hostRootFsMount:
     enabled: true
     mountPropagation: None
@@ -38,19 +27,20 @@ prometheus-node-exporter:
 
 server:
   enabled: true
+
   service:
     enabled: true
     type: ClusterIP
     port: 80
+
   verticalAutoscaler:
     enabled: false
+
   persistentVolume:
     enabled: false
+
   retention: 15d
-  scrape-configs:
-    - job_name: prometheus-node-exporter
-      static_configs:
-        - targets: ["prometheus-node-exporter:9111"]
+
   extraScrapeConfigs:
     - job_name: istio-envoy
       kubernetes_sd_configs:
