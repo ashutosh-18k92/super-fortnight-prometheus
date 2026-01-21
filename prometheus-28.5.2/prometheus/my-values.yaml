@@ -10,10 +10,10 @@ prometheus-node-exporter:
   enabled: true
   # 1. Change the internal port the exporter listens on
   extraArgs:
-    - --web.listen-address=:9101
+    - --web.listen-address=:9111
   service:
-    port: 9101
-    targetPort: 9101
+    port: 9111
+    targetPort: 9111
   hostRootFsMount:
     enabled: true
     mountPropagation: None
@@ -45,7 +45,7 @@ server:
   scrape-configs:
     - job_name: prometheus-node-exporter
       static_configs:
-        - targets: ["prometheus-node-exporter:9101"]
+        - targets: ["prometheus-node-exporter:9111"]
   extraScrapeConfigs:
     - job_name: istio-envoy
       kubernetes_sd_configs:
