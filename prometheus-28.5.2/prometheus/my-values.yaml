@@ -2,7 +2,7 @@ rbac:
   create: true # Automatically creates the ClusterRole and ClusterRoleBinding
 
 serviceAccounts:
-  prometheus-node-exporter:
+  nodeExporter:
     create: true
     name: "prometheus-node-exporter" # Ensure this matches your DaemonSet
 
@@ -10,12 +10,12 @@ prometheus-node-exporter:
   enabled: true
   hostNetwork: true
   hostPID: true
-  securityContext:
-    runAsNonRoot: false
-    runAsUser: 0
-  containerSecurityContext:
-    privileged: true
-    readOnlyRootFilesystem: true
+  # securityContext:
+  #   runAsNonRoot: false
+  #   runAsUser: 0
+  # containerSecurityContext:
+  #   privileged: true
+  #   readOnlyRootFilesystem: true
 
 server:
   enabled: true
