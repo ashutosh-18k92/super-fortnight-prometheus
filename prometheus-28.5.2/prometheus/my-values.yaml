@@ -8,6 +8,11 @@ serviceAccounts:
 
 prometheus-node-exporter:
   enabled: true
+  extraArgs:
+    - --web.listen-address=:9101
+  service:
+    port: 9101
+    targetPort: 9101
   hostRootFsMount:
     enabled: true
     mountPropagation: None
