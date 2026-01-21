@@ -19,6 +19,11 @@ prometheus-node-exporter:
   containerSecurityContext:
     privileged: true
     readOnlyRootFilesystem: false
+    allowPrivilegeEscalation: true
+    capabilities:
+      add:
+        - SYS_ADMIN
+        - SYS_PTRACE
 
 server:
   enabled: true
