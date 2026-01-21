@@ -8,6 +8,8 @@ serviceAccounts:
 
 prometheus-node-exporter:
   enabled: true
+  hostRootFsMount:
+    enabled: false
   hostNetwork: true
   hostPID: true
   securityContext:
