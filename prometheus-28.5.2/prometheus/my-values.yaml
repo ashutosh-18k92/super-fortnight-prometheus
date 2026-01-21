@@ -10,7 +10,7 @@ prometheus-node-exporter:
   enabled: true
   hostRootFsMount:
     enabled: true
-    mountPropagation: HostToContainer
+    mountPropagation: None
   hostNetwork: true
   hostPID: true
   securityContext:
