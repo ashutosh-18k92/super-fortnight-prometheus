@@ -8,6 +8,11 @@ serviceAccounts:
 
 prometheus-node-exporter:
   enabled: true
+  updateStrategy:
+    type: OnDelete # Or 'Recreate' if the chart supports it directly
+
+  # Ensure we have a grace period to release the port
+  terminationGracePeriodSeconds: 5
   # 1. Change the internal port the exporter listens on
   extraArgs:
     - --web.listen-address=:9111
