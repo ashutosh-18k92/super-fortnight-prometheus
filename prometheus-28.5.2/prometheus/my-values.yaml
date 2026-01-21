@@ -1,5 +1,5 @@
-nodeExporter:
-  enabled: false
+prometheus-node-exporter:
+  enabled: false # Disabled as it is not required
 
 server:
   enabled: true
