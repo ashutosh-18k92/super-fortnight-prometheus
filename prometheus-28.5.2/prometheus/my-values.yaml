@@ -5,6 +5,8 @@ prometheus-node-exporter:
   securityContext:
     runAsNonRoot: false
     runAsUser: 0
+  containerSecurityContext:
+    allowPrivilegeEscalation: true
 
 server:
   enabled: true
